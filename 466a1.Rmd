@@ -1,0 +1,194 @@
+---
+title: "APM466 Assignment 1"
+output: html_document
+---
+```{r}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(arith)
+library(YieldCurve)
+library(ustyc)
+```
+
+
+```{r}
+bond_data <- read.csv("/Users/sallyhuang/Desktop/APM466/bond-data.csv")
+```
+
+```{r}
+pv <- 100
+```
+
+```{r}
+d0 <-as.Date("2021-01-18")
+d1 <-as.Date("2021-03-01")
+d2 <-as.Date("2021-06-01")
+d3 <-as.Date("2021-09-01")
+d4 <-as.Date("2022-03-01")
+d5 <-as.Date("2023-03-01")
+d6 <-as.Date("2024-03-01")
+d7 <-as.Date("2024-09-01")
+d8 <-as.Date("2025-03-01")
+d9 <-as.Date("2025-09-01")
+d10 <-as.Date("2026-03-01")
+```
+
+```{r}
+date_list <- list(d1,d2,d3,d4,d5,d6,d7,d8,d9,d10)
+```
+
+```{r}
+calculate_fraction <- function(maturity_date){
+  as.numeric(difftime(maturity_date, d0, units = "days") / 365)
+}
+```
+
+```{r}
+fraction1 <- c()
+fraction2 <- c()
+fraction3 <- c()
+fraction4 <- c()
+fraction5 <- c()
+fraction6 <- c()
+fraction7 <- c()
+fraction8 <- c()
+fraction9 <- c()
+fraction10 <- c()
+```
+
+```{r}
+for (i in 1:10){
+  fraction1[i] <- calculate_fraction(d1 + (i - 1))
+}
+fraction1
+```
+
+```{r}
+for (i in 1:10){
+  fraction2[i] <- calculate_fraction(d2 + (i - 1))
+}
+```
+
+```{r}
+for (i in 1:10){
+  fraction3[i] <- calculate_fraction(d3 + (i - 1))
+}
+```
+
+```{r}
+for (i in 1:10){
+  fraction4[i] <- calculate_fraction(d4 + (i - 1))
+}
+```
+
+```{r}
+for (i in 1:10){
+  fraction5[i] <- calculate_fraction(d5 + (i - 1))
+}
+```
+
+```{r}
+for (i in 1:10){
+  fraction6[i] <- calculate_fraction(d6 + (i - 1))
+}
+```
+
+```{r}
+for (i in 1:10){
+  fraction7[i] <- calculate_fraction(d7 + (i - 1))
+}
+```
+
+```{r}
+for (i in 1:10){
+  fraction8[i] <- calculate_fraction(d8 + (i - 1))
+}
+```
+
+```{r}
+for (i in 1:10){
+  fraction9[i] <- calculate_fraction(d9 + (i - 1))
+}
+```
+
+```{r}
+for (i in 1:10){
+  fraction10[i] <- calculate_fraction(d10 + (i - 1))
+}
+```
+
+```{r}
+fraction_all <- list(fraction1, fraction2, fraction3, fraction4, fraction5, fraction6, fraction7, fraction8, fraction9, fraction10)
+```
+
+```{r}
+coupon_payment <- function(coupon_rate){
+  (coupon_rate*pv)/2
+}
+```
+
+```{r}
+coupon_value <- c()
+for (i in 1:10){
+  coupon_value[i] <- coupon_payment(bond_data$Couponrate[i])
+}
+```
+
+```{r}
+ytm1 <- c()
+bond1_data <- bond_data[1,]
+for (i in 1:10){
+  ytm1[i] <- 0-(log(as.numeric(bond1_data[i + 5])/(pv + coupon_value[i])) / fraction1[i])
+}
+```
+
+```{r}
+ytm2 <- c()
+bond2_data <- bond_data[2,]
+for (i in 1:10){
+  ytm2[i] <- 0-(log(as.numeric(bond2_data[i + 5])/(pv + coupon_value[i])) / fraction2[i])
+}
+```
+
+```{r}
+ytm3 <- c()
+bond3_data <- bond_data[3,]
+fytm3 <- vector("list")
+for (i in 1:10){
+ fytm3[i] <- function(ytm3){
+  bond3_data[i + 5] - coupon_value[3]*exp(-)
+ }
+}
+for (i in 1:10){
+ ytm3[i] <- uniroot(fytm3, lower = 0.00000001, upper = 1)$root
+}
+```
+
+```{r}
+yc <- getYieldCurve()
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
